@@ -3,20 +3,12 @@
 
 
 
-
-
-
-//ADC_Sampler ADC_Sampler::*first = NULL;
-
 uint8_t ADC_Sampler::numChannels = 0;
 
-/*ADC_Sampler::ADC_Sampler() {
-		if (!ADC_Sampler::first) ADC_Sampler::first = this;
-}*/
 
-AdcBuffer *ADC_Sampler::bufferArray = new AdcBuffer(16);
+volatile AdcBuffer *ADC_Sampler::bufferArray = new AdcBuffer(ADC_sequencer_size);
 
-void ADC_Sampler::TIAO_setup(uint16_t counter) {
+void ADC_Sampler::TIAO_setup(uint32_t counter) {
 	pmc_enable_periph_clk (TC_INTERFACE_ID + 0*3+0) ;  // clock the TC0 channel 0
 
 	TcChannel * t = &(TC0->TC_CHANNEL)[0] ;    // pointer to TC0 registers for its channel 0
@@ -43,7 +35,7 @@ void ADC_Sampler::TIAO_setup(uint16_t counter) {
 
 }
 
-uint16_t ADC_Sampler::getClkFrequency(float f) {
+uint32_t ADC_Sampler::getClkFrequency(double f) {
 	return VARIANT_MCK/2 /f;
 }
 
@@ -52,7 +44,7 @@ void ADC_Sampler::ADC_init() {
 	ADC->ADC_CR |= ADC_CR_SWRST; //reset the adc
 	ADC->ADC_IDR = MAX_FIELD ;   // disable interrupts
 	NVIC_EnableIRQ (ADC_IRQn) ;   // enable ADC interrupt vector
-//	ADC->ADC_IER =  ADC_IDR_ENDRX;   // interrupt enable register, enables only ENDRX//////////////////mae crash... maybe function not setted param///////////////////////////////////////////////////////////////////////////////////////////////////
+
 	ADC->ADC_CHDR = 0xFFFF ;      // disable all channels*/
 	////////ADC->ADC_CHER = 0x80 ;        // enable just A0  //////////////////to add methode of enable
 	ADC->ADC_CHER = 0;   //disable all channels
@@ -83,31 +75,60 @@ void ADC_Sampler::prescalerAdjust(uint32_t f) {
 	prescaler/=targetAdc;
 	prescaler-=1;
 	if (prescaler < 0) {
-		Serial.println("SAMPLE FREQUENCY TO HIGH, ADC CLOCK CAN'T HANDLE IT !!! Reduce number of actie channel or chose a lower frequency.");
+		Serial.println("SAMPLE FREQUENCY TO HIGH, ADC CLOCK CAN'T HANDLE IT !!! Reduce number of active channel or chose a lower frequency.");
 		return;
 	}
+	prescaler = constrain(prescaler, 0, 255);
 	ADC->ADC_MR &= ~(ADC_MR_PRESCAL(MAX_FIELD)); //reset prescaler
 	ADC->ADC_MR |= ADC_MR_PRESCAL((int)prescaler);	//set prescaler
 }
 
 void ADC_Sampler::bufferConfig() {
-	//bufferArray = new AdcBuffer(numChannels);
-	/*
+	ADC->ADC_IER =  ADC_IDR_ENDRX;   // interrupt enable register, enables only ENDRX
  // following are the DMA controller registers for this peripheral
  // "receive buffer address" 
-	ADC->ADC_RPR = (uint32_t)global_ADCounts_Array;   // DMA receive pointer register  points to beginning of global_ADCount
+	ADC->ADC_RPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront];   // DMA receive pointer register  points to beginning of global_ADCount
 	// "receive count" 
 	ADC->ADC_RCR = numChannels;  //  receive counter set
 	// "next-buffer address"
-	ADC->ADC_RNPR = (uint32_t)global_ADCounts_Array; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
+	ADC->ADC_RNPR = (uint32_t)(uint32_t)bufferArray->value[bufferArray->countOutterFront]; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
 	// and "next count"
 	ADC->ADC_RNCR = numChannels;   //  and next counter is set
 	// "transmit control register"
 	ADC->ADC_PTCR = ADC_PTCR_RXTEN;  // transfer control register for the DMA is set to enable receiver channel requests
-	*/
+	
 }
 
-//void configBufferHelper() { ADC_Sampler::bufferArray = new AdcBuffer(ADC_Sampler::numChannels);};
+uint16_t* ADC_Sampler::data() {
+	uint16_t* arr = bufferArray->data();
+	return arr;
+	//return bufferArray->data();
+	//uint8_t tmp = bufferArray->countOutterRear;
+	//bufferArray->countOutterRear++;
+	//return bufferArray->value[tmp];
+}
+
+bool ADC_Sampler::available() {
+	if (bufferArray->countOutterRear != bufferArray->countOutterFront) return true;
+	return false;
+}
+
+void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	
+	
+	//   read the interrupt status register 
+	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction
+		/// set up the "next pointer register" 
+		ADC->ADC_RNPR =(uint32_t)bufferArray->value[bufferArray->countOutterFront];  // "receive next pointer" register set to global_ADCounts_Array 
+		// set up the "next count"
+		ADC->ADC_RNCR = numChannels;  // "receive next" counter
+		bufferArray->countOutterFront++;
+	}
+}
+
+void ADC_Sampler::printSetup() {
+	TcChannel * t = &(TC0->TC_CHANNEL)[0];
+	Serial.print("TC_TC"); Serial.println(t->TC_RC);
+}
 
 
 #ifdef __cplusplus
@@ -117,14 +138,7 @@ extern "C"
 
 void ADC_Handler (void)
 {
-/*  if (ADC->ADC_ISR & ADC_ISR_EOC7)   // ensure there was an End-of-Conversion and we read the ISR reg
-  {
-    int val = *(ADC->ADC_CDR+7) ;    // get conversion result
-    samples [sptr] = val ;           // stick in circular buffer
-    sptr = (sptr+1) & BUFMASK ;      // move pointer
-    dac_write (0xFFF & ~val) ;       // copy inverted to DAC output FIFO
-  }
-  isr_count ++ ;*/
+	ADC_Sampler::ADC_Handler();
 }
 
 #ifdef __cplusplus

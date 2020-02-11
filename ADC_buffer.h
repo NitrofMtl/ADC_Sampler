@@ -12,9 +12,10 @@ struct AdcBuffer {
 	uint16_t **value;
 	uint8_t countInnerFront:4;
 	uint8_t countInnerRear:4;
-	uint8_t countOutterFront:16;
-	uint8_t countOutterRear:16;
-	uint16_t* available();
+	uint8_t countOutterFront;
+	uint8_t countOutterRear;
+	bool available();
+	uint16_t* data() volatile;
 	bool full();
 };
 

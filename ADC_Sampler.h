@@ -37,7 +37,7 @@
 
 #define CLOCK_CYCLE_PER_CONVERSION 20
 
-#define ADC_SEQUENCER_SIZE 16
+extern const uint8_t ADC_sequencer_size;
 
 
 const adc_channel_num_t adcChannel[] {
@@ -89,33 +89,31 @@ static void enableChX(Pin pin, PinX ... pinX) { enableChX((uint8_t)pin); enableC
 
 class ADC_Sampler {
 private:
-	static void TIAO_setup(uint16_t counter);
-	static uint16_t getClkFrequency(float f);
+	static void TIAO_setup(uint32_t counter);
+	static uint32_t getClkFrequency(double f);
 	static void ADC_init();
 	static uint8_t numSettedChannel();
 	static void prescalerAdjust(uint32_t f);
-	//static ADC_Sampler *first;
-	
 	
 public:
-	//ADC_Sampler();
 	static void bufferConfig();
 	static uint8_t numChannels;
-	static volatile AdcBuffer bufferArray; //one dinamic alloc for each enable channel
-	//static volatile AdcBuffer *front;
-	//static volatile AdcBuffer *rear;
+	static volatile AdcBuffer *bufferArray; //one dinamic alloc for each enable channel
+	static void ADC_Handler();
+	static uint16_t *data();
+	static bool available();
+	static void printSetup();
 
 	template<typename ... PinX>
-	static void begin(float f, PinX ... pinX){
+	static void begin(double f, PinX ... pinX){
 		Serial.println("begin");
-		uint16_t counter = getClkFrequency(f);
+		uint32_t counter = getClkFrequency(f);
 		TIAO_setup(counter);
 		ADC_init();
 		enableChX(pinX...);
 		numChannels = numSettedChannel();
 		prescalerAdjust(f);
-		//configBufferHelper();
-		//bufferConfig();
+		bufferConfig();
 	};
 
 };
