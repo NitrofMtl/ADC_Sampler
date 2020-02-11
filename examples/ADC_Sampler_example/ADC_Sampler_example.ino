@@ -1,7 +1,7 @@
 #include "ADC_Sampler.h"
 
 
-ADC_Sampler sampler;
+//ADC_Sampler sampler;
 
 void setup()
 {
@@ -62,8 +62,6 @@ void dac_write (int val)
 {
   //DACC->DACC_CDR = val & 0xFFF ;
 }
-
-
 
 void adc_setup ()
 {

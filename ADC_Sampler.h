@@ -3,6 +3,13 @@
 
 #include "Arduino.h"
 
+#include "ADC_buffer.h"
+
+#if defined(ARDUINO_ARCH_AVR)
+  	#error "This libraries is for arduino DUE only !!!"
+#elif defined(ARDUINO_ARCH_SAM)
+  // SAM-specific code
+
 
 #ifndef BIT_FIELD
 #define BIT_FIELD(field)   MAX_FIELD >> (32-field)
@@ -31,7 +38,7 @@
 #define CLOCK_CYCLE_PER_CONVERSION 20
 
 #define ADC_SEQUENCER_SIZE 16
-#define BUFFER_SIZE 256
+
 
 const adc_channel_num_t adcChannel[] {
 										ADC_CHANNEL_7,
@@ -79,25 +86,6 @@ static void enableChX(uint8_t pin){
 template<typename Pin, typename ... PinX>
 static void enableChX(Pin pin, PinX ... pinX) { enableChX((uint8_t)pin); enableChX((uint8_t)pinX...); };
 
-struct AdcBuffer {
-	AdcBuffer(uint8_t innerSize);
-	uint16_t **value;
-	uint8_t countInnerFront:4;
-	uint8_t countInnerRear:4;
-	uint8_t countOutterFront:16;
-	uint8_t countOutterRear:16;
-	uint16_t *availabble() {if (countOutterRear != countOutterFront){  ////<<<<<<<<<<<<<<---- addd move semantic
-								uint8_t tmp = countOutterRear;
-								countOutterRear++;
-								return value[tmp];
-							}
-						};
-	bool full();
-};
-
-class ADC_Sampler;
-
-//void configBufferHelper();
 
 class ADC_Sampler {
 private:
@@ -106,12 +94,14 @@ private:
 	static void ADC_init();
 	static uint8_t numSettedChannel();
 	static void prescalerAdjust(uint32_t f);
+	//static ADC_Sampler *first;
 	
 	
 public:
+	//ADC_Sampler();
 	static void bufferConfig();
 	static uint8_t numChannels;
-	static volatile AdcBuffer *bufferArray; //one dinamic alloc for each enable channel
+	static volatile AdcBuffer bufferArray; //one dinamic alloc for each enable channel
 	//static volatile AdcBuffer *front;
 	//static volatile AdcBuffer *rear;
 
@@ -131,7 +121,7 @@ public:
 };
 
 
-
+#endif
 
 #endif
 

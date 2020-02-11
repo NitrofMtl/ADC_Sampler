@@ -4,33 +4,17 @@
 
 
 
-AdcBuffer::AdcBuffer(uint8_t innerSize) : countInnerFront(0), countInnerRear(0), countOutterFront(0), countOutterRear(0) {
-	value = new uint16_t*[BUFFER_SIZE];
-	for ( int i = 0; i < BUFFER_SIZE; i++) {
-		value[i] = new uint16_t[innerSize];
-	}
-}
-
-/*uint16_t AdcBuffer::*availabble() {
-	//if (countOutterRear != countOutterFront) {
-		//uint8_t tmp = countOutterRear;
-	//}
-	//	
-	//	countOutterRear++;
-		//return value[tmp];
-}*/
 
 
-bool AdcBuffer::full() {
-	if (countOutterRear == countOutterFront) return true;  //find how implement security
-	return false;
-}
-
-
+//ADC_Sampler ADC_Sampler::*first = NULL;
 
 uint8_t ADC_Sampler::numChannels = 0;
 
-AdcBuffer ADC_Sampler::*bufferArray;
+/*ADC_Sampler::ADC_Sampler() {
+		if (!ADC_Sampler::first) ADC_Sampler::first = this;
+}*/
+
+AdcBuffer *ADC_Sampler::bufferArray = new AdcBuffer(16);
 
 void ADC_Sampler::TIAO_setup(uint16_t counter) {
 	pmc_enable_periph_clk (TC_INTERFACE_ID + 0*3+0) ;  // clock the TC0 channel 0
@@ -107,7 +91,7 @@ void ADC_Sampler::prescalerAdjust(uint32_t f) {
 }
 
 void ADC_Sampler::bufferConfig() {
-	bufferArray = new AdcBuffer(numChannels);
+	//bufferArray = new AdcBuffer(numChannels);
 	/*
  // following are the DMA controller registers for this peripheral
  // "receive buffer address" 
