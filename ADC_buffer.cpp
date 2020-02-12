@@ -10,7 +10,7 @@ AdcBuffer::AdcBuffer(uint8_t innerSize) : countInnerFront(0), countInnerRear(0),
 }
 
 uint16_t* AdcBuffer::data() volatile {
-	uint16_t *arr = value[countOutterRear];
+	uint16_t *arr = value[countOutterRear-1];
 	countOutterRear++;
 	return arr;
 } 

@@ -8,7 +8,7 @@ void setup()
 
   //sample frequency, ... channel in orfer into buffer
   ADC_Sampler::begin(5, A7,A6,A5,A4,A3,A2,A0,A1,A9,A10,A11);
-  delay(10000);
+  delay(5000);
   pinMode(13, OUTPUT);
   ADC_Sampler::printSetup();
 

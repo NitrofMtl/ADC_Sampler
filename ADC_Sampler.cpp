@@ -91,21 +91,16 @@ void ADC_Sampler::bufferConfig() {
 	// "receive count" 
 	ADC->ADC_RCR = numChannels;  //  receive counter set
 	// "next-buffer address"
-	ADC->ADC_RNPR = (uint32_t)(uint32_t)bufferArray->value[bufferArray->countOutterFront]; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
+	ADC->ADC_RNPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront +1]; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
 	// and "next count"
 	ADC->ADC_RNCR = numChannels;   //  and next counter is set
 	// "transmit control register"
 	ADC->ADC_PTCR = ADC_PTCR_RXTEN;  // transfer control register for the DMA is set to enable receiver channel requests
-	
 }
 
 uint16_t* ADC_Sampler::data() {
 	uint16_t* arr = bufferArray->data();
 	return arr;
-	//return bufferArray->data();
-	//uint8_t tmp = bufferArray->countOutterRear;
-	//bufferArray->countOutterRear++;
-	//return bufferArray->value[tmp];
 }
 
 bool ADC_Sampler::available() {
@@ -118,9 +113,9 @@ void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointer
 	//   read the interrupt status register 
 	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction
 		/// set up the "next pointer register" 
-		ADC->ADC_RNPR =(uint32_t)bufferArray->value[bufferArray->countOutterFront];  // "receive next pointer" register set to global_ADCounts_Array 
+		ADC->ADC_RNPR =(uint32_t)bufferArray->value[bufferArray->countOutterFront +1];  // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data
 		// set up the "next count"
-		ADC->ADC_RNCR = numChannels;  // "receive next" counter
+		ADC->ADC_RNCR = numChannels;  // "receive next" counter  //not shure needed....
 		bufferArray->countOutterFront++;
 	}
 }
