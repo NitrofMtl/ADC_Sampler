@@ -17,6 +17,7 @@ struct AdcBuffer {
 	bool available();
 	uint16_t* data() volatile;
 	bool full();
+	void bufferReset() volatile;
 };
 
 

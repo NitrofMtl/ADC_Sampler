@@ -103,6 +103,7 @@ public:
 	static uint16_t *data();
 	static bool available();
 	static void printSetup();
+	static void bufferReset();
 
 	template<typename ... PinX>
 	static void begin(double f, PinX ... pinX){

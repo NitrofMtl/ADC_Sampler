@@ -23,6 +23,11 @@ if (countOutterRear != countOutterFront) return true;
 
 
 bool AdcBuffer::full() {
-	if (countOutterRear == countOutterFront) return true;  //find how implement security
+	if (countOutterRear == countOutterFront+2) return true;  //TO DO-->find how implement security
 	return false;
+}
+
+void AdcBuffer::bufferReset() volatile {
+	countOutterRear = countOutterFront-1; //discard data on buffer not already read.
+	Serial.println(countOutterFront);
 }
