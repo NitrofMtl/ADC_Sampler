@@ -106,7 +106,6 @@ public:
 
 	template<typename ... PinX>
 	static void begin(double f, PinX ... pinX){
-		Serial.println("begin");
 		uint32_t counter = getClkFrequency(f);
 		TIAO_setup(counter);
 		ADC_init();

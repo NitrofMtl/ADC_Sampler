@@ -9,16 +9,11 @@ void setup()
   //sample frequency, ... channel in orfer into buffer
   ADC_Sampler::begin(5, A7,A6,A5,A4,A3,A2,A0,A1,A9,A10,A11);
   delay(5000);
-  pinMode(13, OUTPUT);
-  ADC_Sampler::printSetup();
-
 }
 
 
 
-
 void loop() {
-  
   String output;
   if(ADC_Sampler::available()) Serial.println("A7,A6,A5,A4,A3,A2,A0,A1,A9,A10,A11");
   while ( ADC_Sampler::available() ) {
@@ -38,41 +33,3 @@ void loop() {
   }
   delay(1);
 }
-
-
-
-
-
-
-
-
-/*
-void loop()
-{
-
-  
-  String output;
-  if(ADC_Sampler::available()) Serial.println("A7,A6,A5,A4,A3,A2,A0,A1,A9,A10,A11");
-  while ( ADC_Sampler::available() ) {
-    uint8_t tmp = ADC_Sampler::bufferArray->countOutterRear;
-    for (int i = 0; i < ADC_sequencer_size; i++) {
-      
-      uint16_t x =  ADC_Sampler::bufferArray->value[tmp][i];
-      
-      output += String(x);
-      output += ",";  
-    }
-    
-    output += " rear  ";
-    output += String(tmp);
-    output += "  front ";
-    uint8_t fr = ADC_Sampler::bufferArray->countOutterFront;
-    output += String(fr);    
-    
-    Serial.println(output);
-    output = String(); //RESET
-    ADC_Sampler::bufferArray->countOutterRear++;
-  }
-  delay(1);
-}
-*/
