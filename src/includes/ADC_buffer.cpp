@@ -31,3 +31,7 @@ void AdcBuffer::bufferReset() volatile {
 	countOutterRear = countOutterFront-1; //discard data on buffer not already read.
 	Serial.println(countOutterFront);
 }
+
+uint8_t AdcBuffer::arrearSize() volatile {
+	return countOutterFront - countOutterRear;
+}

@@ -110,6 +110,10 @@ void ADC_Sampler::bufferReset() {
 	bufferArray->bufferReset();
 }
 
+uint8_t ADC_Sampler::arrearSize() {
+	return bufferArray->arrearSize();
+}
+
 void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	
 	//   read the interrupt status register 
 	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction

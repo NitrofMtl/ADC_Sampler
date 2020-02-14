@@ -18,6 +18,7 @@ struct AdcBuffer {
 	uint16_t* data() volatile;
 	bool full();
 	void bufferReset() volatile;
+	uint8_t arrearSize() volatile;
 };
 
 

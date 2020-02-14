@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-#include "ADC_buffer.h"
+#include "includes/ADC_buffer.h"
 
 #if defined(ARDUINO_ARCH_AVR)
   	#error "This libraries is for arduino DUE only !!!"
@@ -104,6 +104,7 @@ public:
 	static bool available();
 	static void printSetup();
 	static void bufferReset();
+	static uint8_t arrearSize();
 
 	template<typename ... PinX>
 	static void begin(double f, PinX ... pinX){
