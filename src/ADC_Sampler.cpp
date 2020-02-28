@@ -115,7 +115,7 @@ uint8_t ADC_Sampler::arrearSize() {
 }
 
 void ADC_Sampler::startConversion() {
-
+	ADC->ADC_CR = ADC_CR_START;
 }
 
 void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	
