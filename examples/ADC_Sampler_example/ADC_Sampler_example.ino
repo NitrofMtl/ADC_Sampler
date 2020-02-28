@@ -37,3 +37,4 @@ void loop() {
   Serial.println(ADC_Sampler::arrearSize()); // return the number of sample not treated yet to see if you can handle the sample rate
   //there is not overflow protection, if the reading full up the buffer before you extract the data, buffer is overwritten.
 }
+

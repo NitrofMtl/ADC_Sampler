@@ -38,7 +38,7 @@ uint32_t ADC_Sampler::getClkFrequency(double f) {
 	return VARIANT_MCK/2 /f;
 }
 
-void ADC_Sampler::ADC_init() {
+void ADC_Sampler::ADC_init(uint8_t trigSel) {
 	pmc_enable_periph_clk(ID_ADC);
 	ADC->ADC_CR |= ADC_CR_SWRST; //reset the adc
 	ADC->ADC_IDR = MAX_FIELD ;   // disable interrupts
@@ -50,7 +50,7 @@ void ADC_Sampler::ADC_init() {
 	ADC->ADC_MR = 0; //reset register
 	ADC->ADC_MR |= ADC_MR_USEQ
 				|  ADC_MR_TRGEN
-				|  ADC_MR_TRGSEL(1)
+				|  ADC_MR_TRGSEL(trigSel)
 				|  ADC_MR_TRANSFER(1)
 				|  ADC_MR_TRACKTIM(15)
 				|  ADC_MR_SETTLING(0)
@@ -112,6 +112,10 @@ void ADC_Sampler::bufferReset() {
 
 uint8_t ADC_Sampler::arrearSize() {
 	return bufferArray->arrearSize();
+}
+
+void ADC_Sampler::startConversion() {
+
 }
 
 void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	

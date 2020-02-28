@@ -91,13 +91,12 @@ class ADC_Sampler {
 private:
 	static void TIAO_setup(uint32_t counter);
 	static uint32_t getClkFrequency(double f);
-	static void ADC_init();
+	static void ADC_init(uint8_t trigSel);
 	static uint8_t numSettedChannel();
 	static void prescalerAdjust(uint32_t f);
-	
-public:
 	static void bufferConfig();
 	static uint8_t numChannels;
+public:
 	static volatile AdcBuffer *bufferArray; //one dinamic alloc for each enable channel
 	static void ADC_Handler();
 	static uint16_t *data();
@@ -105,18 +104,27 @@ public:
 	static void printSetup();
 	static void bufferReset();
 	static uint8_t arrearSize();
+	static void startConversion();
 
 	template<typename ... PinX>
 	static void begin(double f, PinX ... pinX){
 		uint32_t counter = getClkFrequency(f);
 		TIAO_setup(counter);
-		ADC_init();
+		ADC_init(ADC_MR_TRGSEL_ADC_TRIG1); //TIOA ch 0
 		enableChX(pinX...);
 		numChannels = numSettedChannel();
 		prescalerAdjust(f);
 		bufferConfig();
 	};
 
+	template<typename ... PinX>
+	static void beginExternalTrigger(double f, PinX ... pinX) { //still need frequency to adjust prescaler 
+		ADC_init(ADC_MR_TRGSEL_ADC_TRIG0); //External : ADCTRG
+		enableChX(pinX...);
+		numChannels = numSettedChannel();
+		prescalerAdjust(getClkFrequency(f));
+		bufferConfig();
+	}
 };
 
 

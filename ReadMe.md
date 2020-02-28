@@ -49,3 +49,19 @@ Serial.println(ADC_Sampler::arrearSize()); // return the number of sample not tr
 ## Limitation
 
 #### There is not overflow protection, if the reading full up the buffer before you extract the data, buffer is overwritten.
+
+## New in version 1.1
+
+### Begin function to use external sofware trigguer
+
+If you want to synk ADC conversion with another signal, use beginExternalTrigger:
+
+````
+beginExternalTrigger(frequency, ... pinX);
+````
+Here, the frequency is ther expected frequenncy to adust the prescaler of the ADC. Should be smaller than the used handler.
+
+Put inside your handler the call for conversion:
+````
+ADC_Sampler::startConversion();
+````
