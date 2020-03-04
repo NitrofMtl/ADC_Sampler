@@ -110,7 +110,7 @@ public:
 	static void begin(double f, PinX ... pinX){
 		uint32_t counter = getClkFrequency(f);
 		TIAO_setup(counter);
-		ADC_init(ADC_MR_TRGSEL_ADC_TRIG1); //TIOA ch 0
+		ADC_init(1); //TIOA ch 0 //ADC_MR_TRGSEL_ADC_TRIG1
 		enableChX(pinX...);
 		numChannels = numSettedChannel();
 		prescalerAdjust(f);
@@ -119,7 +119,7 @@ public:
 
 	template<typename ... PinX>
 	static void beginExternalTrigger(double f, PinX ... pinX) { //still need frequency to adjust prescaler 
-		ADC_init(ADC_MR_TRGSEL_ADC_TRIG0); //External : ADCTRG
+		ADC_init(0); //External : ADCTRG //ADC_MR_TRGSEL_ADC_TRIG0
 		enableChX(pinX...);
 		numChannels = numSettedChannel();
 		prescalerAdjust(getClkFrequency(f));
