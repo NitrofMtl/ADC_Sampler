@@ -87,7 +87,7 @@ template<typename Pin, typename ... PinX>
 static void enableChX(Pin pin, PinX ... pinX) { enableChX((uint8_t)pin); enableChX((uint8_t)pinX...); };
 
 
-class ADC_Sampler {
+class ADC_Sampler_class {
 private:
 	static void TIAO_setup(uint32_t counter);
 	static uint32_t getClkFrequency(double f);
@@ -126,6 +126,8 @@ public:
 		bufferConfig();
 	}
 };
+
+extern ADC_Sampler_class ADC_Sampler;
 
 
 #endif

@@ -2,13 +2,12 @@
 #include "ADC_Sampler.h"
 
 
+uint8_t ADC_Sampler_class::numChannels = 0;
 
-uint8_t ADC_Sampler::numChannels = 0;
 
+volatile AdcBuffer *ADC_Sampler_class::bufferArray = new AdcBuffer(ADC_sequencer_size);
 
-volatile AdcBuffer *ADC_Sampler::bufferArray = new AdcBuffer(ADC_sequencer_size);
-
-void ADC_Sampler::TIAO_setup(uint32_t counter) {
+void ADC_Sampler_class::TIAO_setup(uint32_t counter) {
 	pmc_enable_periph_clk (TC_INTERFACE_ID + 0*3+0) ;  // clock the TC0 channel 0
 
 	TcChannel * t = &(TC0->TC_CHANNEL)[0] ;    // pointer to TC0 registers for its channel 0
@@ -34,11 +33,11 @@ void ADC_Sampler::TIAO_setup(uint32_t counter) {
 
 }
 
-uint32_t ADC_Sampler::getClkFrequency(double f) {
+uint32_t ADC_Sampler_class::getClkFrequency(double f) {
 	return VARIANT_MCK/2 /f;
 }
 
-void ADC_Sampler::ADC_init(uint8_t trigSel) {
+void ADC_Sampler_class::ADC_init(uint8_t trigSel) {
 	pmc_enable_periph_clk(ID_ADC);
 	ADC->ADC_CR |= ADC_CR_SWRST; //reset the adc
 	ADC->ADC_IDR = MAX_FIELD ;   // disable interrupts
@@ -59,7 +58,7 @@ void ADC_Sampler::ADC_init(uint8_t trigSel) {
 				|  ADC_MR_TRANSFER(3);
 }
 
-uint8_t ADC_Sampler::numSettedChannel() {
+uint8_t ADC_Sampler_class::numSettedChannel() {
 	uint8_t setted = 0;
 	for ( int i = 0; i < 15; i++) {
 		if ( 1<<i & ADC->ADC_CHSR ) setted++;
@@ -67,7 +66,7 @@ uint8_t ADC_Sampler::numSettedChannel() {
 	return setted;
 }
 
-void ADC_Sampler::prescalerAdjust(uint32_t f) {
+void ADC_Sampler_class::prescalerAdjust(uint32_t f) {
 	uint32_t targetAdc = f * numChannels *CLOCK_CYCLE_PER_CONVERSION;
 	double prescaler = VARIANT_MCK/2;	
 	prescaler/=targetAdc;
@@ -81,7 +80,7 @@ void ADC_Sampler::prescalerAdjust(uint32_t f) {
 	ADC->ADC_MR |= ADC_MR_PRESCAL((int)prescaler);	//set prescaler
 }
 
-void ADC_Sampler::bufferConfig() {
+void ADC_Sampler_class::bufferConfig() {
 	ADC->ADC_IER =  ADC_IDR_ENDRX;   // interrupt enable register, enables only ENDRX
  // following are the DMA controller registers for this peripheral
  // "receive buffer address" 
@@ -96,29 +95,29 @@ void ADC_Sampler::bufferConfig() {
 	ADC->ADC_PTCR = ADC_PTCR_RXTEN;  // transfer control register for the DMA is set to enable receiver channel requests
 }
 
-uint16_t* ADC_Sampler::data() {
+uint16_t* ADC_Sampler_class::data() {
 	uint16_t* arr = bufferArray->data();
 	return arr;
 }
 
-bool ADC_Sampler::available() {
+bool ADC_Sampler_class::available() {
 	if (bufferArray->countOutterRear != bufferArray->countOutterFront) return true;
 	return false;
 }
 
-void ADC_Sampler::bufferReset() {
+void ADC_Sampler_class::bufferReset() {
 	bufferArray->bufferReset();
 }
 
-uint8_t ADC_Sampler::arrearSize() {
+uint8_t ADC_Sampler_class::arrearSize() {
 	return bufferArray->arrearSize();
 }
 
-void ADC_Sampler::startConversion() {
+void ADC_Sampler_class::startConversion() {
 	ADC->ADC_CR = ADC_CR_START;
 }
 
-void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	
+void ADC_Sampler_class::ADC_Handler() {     // for the ATOD: re-initialize DMA pointers and count	
 	//   read the interrupt status register 
 	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction
 		/// set up the "next pointer register" 
@@ -129,11 +128,13 @@ void ADC_Sampler::ADC_Handler() {     // for the ATOD: re-initialize DMA pointer
 	}
 }
 
-void ADC_Sampler::printSetup() {
+void ADC_Sampler_class::printSetup() {
 	TcChannel * t = &(TC0->TC_CHANNEL)[0];
 	Serial.print("TC_TC  "); Serial.println(t->TC_RC);
 }
 
+
+ADC_Sampler_class ADC_Sampler;
 
 #ifdef __cplusplus
 extern "C"
@@ -142,7 +143,7 @@ extern "C"
 
 void ADC_Handler (void)
 {
-	ADC_Sampler::ADC_Handler();
+	ADC_Sampler_class::ADC_Handler();
 }
 
 #ifdef __cplusplus
