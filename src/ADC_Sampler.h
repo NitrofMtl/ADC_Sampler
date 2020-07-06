@@ -65,7 +65,7 @@ static void enableChX(uint8_t pin){
 	uint32_t ch = 0;
 	while ((1<<ch) & ADC->ADC_CHSR) ch++; //find first free spot in channel register
 	
-	ADC->ADC_CHER |= (1<<ch); //enale next channel
+	ADC->ADC_CHER = (1<<ch); //enale next channel
 	if ( ch < 8 ) {
 		if (ch==0) {
 			ADC->ADC_SEQR1 |= adcChannel[pin];

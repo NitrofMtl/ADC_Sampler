@@ -39,7 +39,7 @@ uint32_t ADC_Sampler_class::getClkFrequency(double f) {
 
 void ADC_Sampler_class::ADC_init(uint8_t trigSel) {
 	pmc_enable_periph_clk(ID_ADC);
-	ADC->ADC_CR |= ADC_CR_SWRST; //reset the adc
+	ADC->ADC_CR = ADC_CR_SWRST; //reset the adc
 	ADC->ADC_IDR = MAX_FIELD ;   // disable interrupts
 	NVIC_EnableIRQ (ADC_IRQn) ;   // enable ADC interrupt vector
 
