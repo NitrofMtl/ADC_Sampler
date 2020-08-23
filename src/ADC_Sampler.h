@@ -19,12 +19,12 @@
 
 #ifndef ADC_MR_FIELD
 #define ADC_MR_FIELD
-#define ADC_MR_TRANSFER(x) ( x & BIT_FIELD(2) ) << 28
-#define ADC_MR_TRACKTIM(x) ( x & BIT_FIELD(4) ) << 24
+//#define ADC_MR_TRANSFER(x) ( x & BIT_FIELD(2) ) << 28
+//#define ADC_MR_TRACKTIM(x) ( x & BIT_FIELD(4) ) << 24
 #define ADC_MR_SETTLING(x) ( x & BIT_FIELD(2) ) << 20
 #define ADC_MR_STARTUP(x)  ( x & BIT_FIELD(4) ) << 16
-#define ADC_MR_PRESCAL(x)  ( x & BIT_FIELD(8) ) << 8
-#define ADC_MR_TRGSEL(x)   ( x & BIT_FIELD(3) ) << 1
+//#define ADC_MR_PRESCAL(x)  ( x & BIT_FIELD(8) ) << 8
+#define ADC_MR_TRGSEL(x)   ( x & BIT_FIELD(3) ) << ADC_MR_TRGSEL_Pos
 #endif
 
 #ifndef TC_CMR_FIELD
