@@ -84,7 +84,7 @@ static void enableChX(uint8_t pin){
 };
 
 template<typename Pin, typename ... PinX>
-static void enableChX(Pin pin, PinX ... pinX) { enableChX((uint8_t)pin); enableChX((uint8_t)pinX...); };
+constexpr static void enableChX(Pin pin, PinX ... pinX) { enableChX((uint8_t)pin); enableChX((uint8_t)pinX...); };
 
 
 class ADC_Sampler_class {

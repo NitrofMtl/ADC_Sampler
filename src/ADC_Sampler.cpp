@@ -23,7 +23,7 @@ void ADC_Sampler_class::TIAO_setup(uint32_t counter) {
 
 	t->TC_RC =  counter ;     // counter resets on RC, so sets period in terms of 42MHz clock---952 for 44.1kHz
 	t->TC_RA =  counter/2 ;     // roughly square wave
-	t->TC_CMR =  (t->TC_CMR & ~(TC_CMR_LDRA(MAX_FIELD)) ) & (t->TC_CMR & ~(TC_CMR_LDRB(MAX_FIELD)) ) | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET ;  // set clear and set from RA and RC compares
+	t->TC_CMR = ( (t->TC_CMR & ~(TC_CMR_LDRA(MAX_FIELD)) ) & (t->TC_CMR & ~(TC_CMR_LDRB(MAX_FIELD)) ) ) | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET ;  // set clear and set from RA and RC compares
 
 	t->TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG ;  // re-enable local clocking and switch to hardware trigger source.
 
