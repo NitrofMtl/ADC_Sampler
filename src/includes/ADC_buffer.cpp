@@ -1,7 +1,6 @@
 #include "ADC_buffer.h"
 
 
-
 AdcBuffer::AdcBuffer(uint8_t innerSize) : countInnerFront(0), countInnerRear(0), countOutterFront(0), countOutterRear(0) {
 	value = new uint16_t*[BUFFER_SIZE];
 	for ( int i = 0; i < BUFFER_SIZE; i++) {
@@ -10,7 +9,17 @@ AdcBuffer::AdcBuffer(uint8_t innerSize) : countInnerFront(0), countInnerRear(0),
 }
 
 uint16_t* AdcBuffer::data() volatile {
-	uint16_t *arr = value[countOutterRear-1];
+	auto *arr = value[countOutterRear-1];
+/*	if ( countOutterRear == 0 ) { 
+		countOutterRear++;
+	}*/
+	Serial.print(" pos: "); Serial.print(countOutterRear);
+	for ( int i = 0; i < 3; i++) {
+		 Serial.print(" "); Serial.print(arr[i]);
+	}
+	Serial.println();
+	
+	//if ( (countOutterRear %10) == 0 ) Serial.println();
 	countOutterRear++;
 	return arr;
 } 

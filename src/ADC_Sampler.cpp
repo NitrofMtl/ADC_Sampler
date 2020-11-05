@@ -50,9 +50,8 @@ void ADC_Sampler_class::ADC_init(uint8_t trigSel) {
 	ADC->ADC_MR |= ADC_MR_USEQ
 				|  ADC_MR_TRGEN
 				|  ADC_MR_TRGSEL(trigSel)
-				|  ADC_MR_TRANSFER(1)
 				|  ADC_MR_TRACKTIM(15)
-				|  ADC_MR_SETTLING(0)
+				|  ADC_MR_SETTLING(1)
 				|  ADC_MR_STARTUP(8)
 				|  ADC_MR_PRESCAL(255)
 				|  ADC_MR_TRANSFER(3);
@@ -84,7 +83,7 @@ void ADC_Sampler_class::bufferConfig() {
 	ADC->ADC_IER =  ADC_IDR_ENDRX;   // interrupt enable register, enables only ENDRX
  // following are the DMA controller registers for this peripheral
  // "receive buffer address" 
-	ADC->ADC_RPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront-1];   // DMA receive pointer register  points to beginning of global_ADCount
+	ADC->ADC_RPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront];   // DMA receive pointer register  points to beginning of global_ADCount
 	// "receive count" 
 	ADC->ADC_RCR = numChannels;  //  receive counter set
 	// "next-buffer address"
@@ -121,10 +120,10 @@ void ADC_Sampler_class::ADC_Handler() {     // for the ATOD: re-initialize DMA p
 	//   read the interrupt status register 
 	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction
 		/// set up the "next pointer register" 
-		ADC->ADC_RNPR =(uint32_t)bufferArray->value[bufferArray->countOutterFront+1];  // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data
+		ADC->ADC_RNPR =(uint32_t)bufferArray->value[++bufferArray->countOutterFront];  // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data
 		// set up the "next count"
 		ADC->ADC_RNCR = numChannels;  // "receive next" counter
-		bufferArray->countOutterFront++;
+		
 	}
 }
 
