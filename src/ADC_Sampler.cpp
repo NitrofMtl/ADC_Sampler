@@ -83,25 +83,30 @@ void ADC_Sampler_class::bufferConfig() {
 	ADC->ADC_IER =  ADC_IDR_ENDRX;   // interrupt enable register, enables only ENDRX
  // following are the DMA controller registers for this peripheral
  // "receive buffer address" 
-	ADC->ADC_RPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront];   // DMA receive pointer register  points to beginning of global_ADCount
+	ADC->ADC_RPR = (uint32_t)bufferArray->buffer[bufferArray->countOutterFront];   // DMA receive pointer register  points to beginning of global_ADCount
 	// "receive count" 
 	ADC->ADC_RCR = numChannels;  //  receive counter set
+
+//NOTE: RNPR seem useless here...	
 	// "next-buffer address"
-	ADC->ADC_RNPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront]; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
+	//ADC->ADC_RNPR = (uint32_t)bufferArray->value[bufferArray->countOutterFront]; // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data 
+//
+
 	// and "next count"
 	ADC->ADC_RNCR = numChannels;   //  and next counter is set
 	// "transmit control register"
 	ADC->ADC_PTCR = ADC_PTCR_RXTEN;  // transfer control register for the DMA is set to enable receiver channel requests
 }
 
-uint16_t* ADC_Sampler_class::data() {
-	uint16_t* arr = bufferArray->data();
+uint16_t* ADC_Sampler_class::get() {
+	uint16_t* arr = bufferArray->get();
 	return arr;
 }
 
 bool ADC_Sampler_class::available() {
-	if (bufferArray->countOutterRear != bufferArray->countOutterFront) return true;
-	return false;
+	//if (bufferArray->countOutterRear != bufferArray->countOutterFront) return true;
+	//return false;
+	return bufferArray->available();
 }
 
 void ADC_Sampler_class::bufferReset() {
@@ -120,7 +125,7 @@ void ADC_Sampler_class::ADC_Handler() {     // for the ATOD: re-initialize DMA p
 	//   read the interrupt status register 
 	if (ADC->ADC_ISR & ADC_ISR_ENDRX){ /// check the bit "endrx"  in the status register /// ADC_IDR_ENDRX correction
 		/// set up the "next pointer register" 
-		ADC->ADC_RNPR =(uint32_t)bufferArray->value[++bufferArray->countOutterFront];  // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data
+		ADC->ADC_RNPR =(uint32_t)bufferArray->buffer[++bufferArray->countOutterFront];  // next receive pointer register DMA global_ADCounts_Arrayfer  points to second set of data
 		// set up the "next count"
 		ADC->ADC_RNCR = numChannels;  // "receive next" counter
 		

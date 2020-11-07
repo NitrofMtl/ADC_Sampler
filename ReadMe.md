@@ -29,7 +29,8 @@ if(ADC_Sampler.available()) {
 To access data:
 ````
 while ( ADC_Sampler.available() ) {
-    uint16_t* x = ADC_Sampler.data(); // data() return a pointer array of the size of ADC_sequencer_size
+    ~~uint16_t* x = ADC_Sampler.data(); // data() return a pointer array of the size of ADC_sequencer_size~~
+    uint16_t* x = ADC_Sampler.get(); // get() return a pointer array of the size of ADC_sequencer_size
     for (int i = 0; i < ADC_sequencer_size; i++) {
    x[i]; //  Do what you want with array data
     }

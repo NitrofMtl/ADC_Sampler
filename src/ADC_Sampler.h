@@ -99,8 +99,8 @@ private:
 public:
 	static volatile AdcBuffer *bufferArray; //one dinamic alloc for each enable channel
 	static void ADC_Handler();
-	static uint16_t *data();
-	static bool available();
+	static uint16_t *get();
+	static bool available ();
 	static void printSetup();
 	static void bufferReset();
 	static uint8_t arrearSize();

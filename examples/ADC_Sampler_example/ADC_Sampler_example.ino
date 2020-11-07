@@ -18,7 +18,7 @@ void loop() {
   String output;
   if(ADC_Sampler.available()) Serial.println("A7,A6,A5,A4,A3,A2,A0,A1,A9,A10,A11");
   while ( ADC_Sampler.available() ) {
-    uint16_t* x = ADC_Sampler.data();
+    uint16_t* x = ADC_Sampler.get();
     for (int i = 0; i < ADC_sequencer_size; i++) {
       output += String(x[i]);
       output += ",";
